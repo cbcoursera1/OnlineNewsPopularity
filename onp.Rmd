@@ -1,0 +1,119 @@
+---
+title: "Online News Popularity - Analysis"
+author: "cbcoursera1"
+date: "Monday, June 29, 2015"
+output: html_document
+---
+
+```{r}
+
+# Code allowing for figures dynamically in Appendix
+
+library(knitr)
+opts_chunk$set(echo = F, warnings = F, message = F, comment = F, include = T, cache = T)
+
+```
+
+```{r}
+
+# Report format
+
+# indicates a comment (ie code section header)
+## indicates a subcomment (comments within code section )
+### indicates a commented piece of code - eg a function you tried but doesn't contribute further down the line
+
+# During exploratory analysis let's keep our code chunks separate
+
+# Feel free to add some formatting advice here
+
+```
+
+```{r, 1}
+
+# Libraries
+
+library(data.table)
+library(ggplot2)
+
+# Ingest the data
+
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00332/OnlineNewsPopularity.zip", "OnlineNewsPopularity.zip")
+unzip("OnlineNewsPopularity.zip")
+onp <- fread("OnlineNewsPopularity/OnlineNewsPopularity.csv", sep = ",", header = T, data.table = T)
+onp.bak <- onp # backup
+onp <- onp.bak # revert from backup
+### lapply(mean, onp) # quick visual check that means match summary provided with data
+
+# Clean data
+
+setnames(onp, gsub("_", ".", names(onp))) # fix column titles
+### lapply(onp, class) # look at the classes, mostly they look fine
+### onp[, grep(".is.", names(onp))] <- lapply(onp[, grep(".is.", names(onp)), with = F], as.logical)
+
+```
+
+=========================================================================
+
+# Everything after here is WIP
+
+=========================================================================
+
+```{r}
+
+## Let's do three things with the data
+
+## turn the weekday.is.monday etc variables into a factor variable of dayofweek
+
+onp[, day.of.week := factor(rep("", nrow(onp)), levels = c("mon", "tue", "wed", "thu", "fri", "sat", "sun"))]  ## create empty factor variable
+
+dow <- data.table("s" = c("mon", "tue", "wed", "thu", "fri", "sat", "sun"), "l" = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")) # create data table of short and long day names
+
+## CB ===================================================================
+## Having a hard time with this. My goal is to binary search the data.table in
+## each weekday.is column, and if it's a 1 (ie TRUE) then set the day.of.week
+## column with the corresponding factor
+## My plan was to iterate through the for statement for each pair, eg "mon", "monday"
+## The problem right now is that I can't get a simple binary search to work
+## on the data.table, eg    
+##
+## onp[weekday.is.monday == 1]
+##
+## it tells me the object is not found, but it is the column name. Removing the
+## .s also does not help. However
+##
+## onp[url == 1]
+##
+## works fine. Maybe because it's the first column? Anyway, help appreciated.
+
+for (i in nrow(dow)) {
+    
+    onp[paste0("weekday.is.", dow[i, l]) == T, day.of.week := dow[i, s]]
+
+}   ## iterate across days of week filling the day.of.week column
+
+## turn the data.channel.is.bus etc variables into a factor varaible of channel (same method as dow)
+
+## grab the date from the URL
+
+
+```
+
+# Appendix
+
+```{r}
+
+opts_chunk$set(include = F)
+
+```
+
+### Source
+
+UCI Machine Learning Repository - Online News Popularity Data Set, donated 5/31/15
+https://archive.ics.uci.edu/ml/datasets/Online+News+Popularity
+
+### Citation
+
+    K. Fernandes, P. Vinagre and P. Cortez. A Proactive Intelligent Decision
+    Support System for Predicting the Popularity of Online News. Proceedings
+    of the 17th EPIA 2015 - Portuguese Conference on Artificial Intelligence,
+    September, Coimbra, Portugal.
