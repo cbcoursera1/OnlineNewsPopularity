@@ -1,0 +1,4 @@
+Basic notes of the project
+
+location: https://github.com/cbcoursera1/OnlineNewsPopularity
+#author: Luis Calleja
