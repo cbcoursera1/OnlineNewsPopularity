@@ -32,6 +32,7 @@ opts_chunk$set(echo = F, warnings = F, message = F, comment = F, include = T, ca
 
 # Libraries
 
+install.packages('data.table')
 library(data.table)
 library(ggplot2)
 
@@ -40,6 +41,11 @@ library(ggplot2)
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00332/OnlineNewsPopularity.zip", "OnlineNewsPopularity.zip")
 unzip("OnlineNewsPopularity.zip")
 onp <- fread("OnlineNewsPopularity/OnlineNewsPopularity.csv", sep = ",", header = T, data.table = T)
+
+onp.dt <- fread("OnlineNewsPopularity/OnlineNewsPopularity.csv", sep = ",", header = T, data.table = F)
+
+pop<-read.csv('/home/homeboy/Documents/Coursera/statsLearning/groupProjects/OnlineNewsPopularity/OnlineNewsPopularity/OnlineNewsPopularity.csv')
+
 onp.bak <- onp # backup
 onp <- onp.bak # revert from backup
 ### lapply(mean, onp) # quick visual check that means match summary provided with data
@@ -94,9 +100,22 @@ for (i in nrow(dow)) {
 ## turn the data.channel.is.bus etc variables into a factor varaible of channel (same method as dow)
 
 ## grab the date from the URL
-
-
 ```
+
+Let's have a look over the distribution of shares:
+```{r}
+ggplot(data=pop[pop$shares<13000,], aes(x=shares))+geom_histogram(binwidth=I(13000/30), color="orange")
+
+ggplot(data=pop[pop$shares<13000,], aes(x=shares))+geom_histogram(aes(y=..density..),binwidth=I(13000/30), color="orange") + geom_density(alpha=.2, fill="#FF6666")
+
+#summary(pop$shares,na.rm=TRUE)
+#quantile(pop$shares,na.rm=TRUE, probs=seq(0,1,by=.1))
+```
+
+This distribution can be approximated with either
+a) Poisson, b) exponential, or c) gamma distribution.
+
+In an effort to fit a distribution that most closely approximates the data on number of hits, we use ecdf - empirical cumulative distribution function.
 
 # Appendix
 

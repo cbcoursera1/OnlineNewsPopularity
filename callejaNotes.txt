@@ -2,3 +2,5 @@ Basic notes of the project
 
 location: https://github.com/cbcoursera1/OnlineNewsPopularity
 #author: Luis Calleja
+
+Distribution fit pdf: http://cran.r-project.org/doc/contrib/Ricci-distributions-en.pdf
