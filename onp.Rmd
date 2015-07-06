@@ -65,36 +65,7 @@ setnames(onp, gsub(" ", "", names(onp))) # fix column titles
 
 ## turn the weekday.is.monday etc variables into a factor variable of dayofweek
 
-onp[, day.of.week := factor(rep("", nrow(onp)), levels = c("mon", "tue", "wed", "thu", "fri", "sat", "sun"))]  ## create empty factor variable
-
-dow <- data.table("s" = c("mon", "tue", "wed", "thu", "fri", "sat", "sun"), "l" = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")) # create data table of short and long day names
-
-## CB ===================================================================
-## Having a hard time with this. My goal is to binary search the data.table in
-## each weekday.is column, and if it's a 1 (ie TRUE) then set the day.of.week
-## column with the corresponding factor
-## My plan was to iterate through the for statement for each pair, eg "mon", "monday"
-## The problem right now is that I can't get a simple binary search to work
-## on the data.table, eg    
-##
-## onp[weekday.is.monday == 1]
-##
-## it tells me the object is not found, but it is the column name. Removing the
-## .s also does not help. However
-##
-## onp[url == 1]
-##
-## works fine. Maybe because it's the first column? Anyway, help appreciated.
-
-for (i in nrow(dow)) {
-    
-    onp[paste0("weekday.is.", dow[i, l]) == T, day.of.week := dow[i, s]]
-
-}   ## iterate across days of week filling the day.of.week column
-
 ## turn the data.channel.is.bus etc variables into a factor varaible of channel (same method as dow)
-
-## grab the date from the URL
 
 
 ```
