@@ -39,7 +39,7 @@ library(ggplot2)
 
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00332/OnlineNewsPopularity.zip", "OnlineNewsPopularity.zip")
 unzip("OnlineNewsPopularity.zip")
-onp <- fread("OnlineNewsPopularity/OnlineNewsPopularity.csv", sep = ",", header = T, data.table = T)
+onp <- fread("OnlineNewsPopularity/OnlineNewsPopularity.csv", sep = ", ", header = T, data.table = T)
 onp.bak <- onp # backup
 onp <- onp.bak # revert from backup
 ### lapply(mean, onp) # quick visual check that means match summary provided with data
@@ -47,6 +47,7 @@ onp <- onp.bak # revert from backup
 # Clean data
 
 setnames(onp, gsub("_", ".", names(onp))) # fix column titles
+setnames(onp, gsub(" ", "", names(onp))) # fix column titles
 ### lapply(onp, class) # look at the classes, mostly they look fine
 ### onp[, grep(".is.", names(onp))] <- lapply(onp[, grep(".is.", names(onp)), with = F], as.logical)
 
