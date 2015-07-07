@@ -35,6 +35,7 @@ opts_chunk$set(echo = F, warnings = F, message = F, comment = F, include = T, ca
 install.packages('data.table')
 library(data.table)
 library(ggplot2)
+library(reshape2)
 
 # Ingest the data
 
@@ -113,10 +114,60 @@ ggplot(data=pop[pop$shares<13000,], aes(x=shares))+geom_histogram(aes(y=..densit
 ```
 
 This distribution can be approximated with either
-a) Poisson, b) exponential, or c) gamma distribution.
+a) Weibull, b) gamma distribution, or c) Poisson
 
 In an effort to fit a distribution that most closely approximates the data on number of hits, we use ecdf - empirical cumulative distribution function.
 
+Can we use qqplot to compare theoretical distributions to the observed?
+
+Doing so may require a new dataframe/vector of samples from the theoretical population:
+a) Weibull requires a shape and scale parameter
+
+```{r}
+summary(pop[,39])
+head(pop[,39])
+```
+
+Convert categorical/factor variables from wide to long using the reshape2 package. Try using URL as the time variable... if that doesn't work, I will have to create such a variable.
+
+Using melt, cast and dcast from the reshape2 package
+```{r}
+pop.days<-pop[,c(1,32:38)]
+nuevo<-melt(pop.days, id="url") #creates a d.f.
+
+nuevo.2<-nuevo[!nuevo$value==0,]
+nuevo.3<-nuevo.2[,-3]
+#manipulate the days label
+levels(nuevo.3$variable)<-c('monday','tuesday','wednesday','thursday','friday','saturday','sunday')
+
+pop.d<-merge(pop[,-c(32:38)],nuevo.3,by=factor("url"),sort=FALSE)
+
+names(pop.d)[55]<-'day.of.week'
+```
+
+Apply the above function to data channel types... converting data channel to a factor variable from a boolean indicator:
+```{r}
+pop.channels<-pop[,c(1,14:19)]
+nuevo.c<-melt(pop.channels, id="url") #creates a d.f.
+
+nuevo[as.character(factor(nuevo$url))=='http://mashable.com/2013/01/07/amazon-instant-video-browser/',]
+
+nuevo[factor(nuevo$url)=='http://mashable.com/2013/01/07/amazon-instant-video-browser/',]
+
+nuevo.c.2<-nuevo.c[!nuevo.c$value==0,]
+```
+
+Unfortunately, we have no channel data for 6,134 news articles. Regressing on this variable means testing on a truncated data set. There are still 33,510 observations for the data set with channel data.
+
+```{r}
+nuevo.c.3<-nuevo.c.2[,-3]
+#manipulate the days label
+levels(nuevo.c.3$variable)<-c('lifestyle','entertainment','bus','socmed','tech','world')
+
+pop.d.c<-merge(pop.d[,-c(14:19)],nuevo.c.3,by=factor("url"),sort=FALSE)
+
+names(pop.d.c)[50]<-'data.channel'
+```
 # Appendix
 
 ```{r}
